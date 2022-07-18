@@ -1,8 +1,5 @@
-streamlit
-urllib
-json
-pathlib 
-os
-pandas
-plotly
-datetime
+pandas==1.2.3
+numpy==1.20.2
+streamlit==1.10.0
+urllib3==1.26.7
+plotly==5.8.0
