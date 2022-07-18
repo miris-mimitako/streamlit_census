@@ -114,7 +114,6 @@ lightgbm==3.3.2
 LinearRegression==0.0.1
 lxml==4.9.0
 Mako==1.2.0
-mariadb==1.0.6
 Markdown==3.3.6
 MarkupSafe==2.0.1
 matplotlib==3.4.0
