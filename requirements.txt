@@ -45,7 +45,6 @@ dash==2.4.1
 dash-core-components==2.0.0
 dash-html-components==2.0.0
 dash-table==5.0.0
-datatable==1.0.0
 debugpy==1.6.0
 decorator==4.4.2
 defusedxml==0.7.1
