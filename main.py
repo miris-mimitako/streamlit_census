@@ -35,6 +35,7 @@ df_value = pd.DataFrame(
     dic_data["GET_STATS_DATA"]["STATISTICAL_DATA"]["DATA_INF"]["VALUE"]
 )
 
+
 # st.markdown(
 #     """
 #   ## Cat01: 分野
@@ -76,20 +77,49 @@ df_merge["DI"] = df_merge["$"].astype("float32")
 df_merge["DI_standard"] = df_merge["$"].astype("float32") - 50
 df_merge["category_level"] = df_merge["category_level"].astype("int16")
 df_merge.sort_values("date", inplace=True)
-# st.write(df_merge)
+st.write(df_merge)
 
+open_date = datetime.datetime.strptime(
+    dic_data["GET_STATS_DATA"]["STATISTICAL_DATA"]["TABLE_INF"]["OPEN_DATE"], "%Y-%m-%d"
+)
 
-col1, col2 = st.columns(2)
+st.markdown(
+    f"""
+  ## 最新の景気動向指数（DI）の数値一覧
+
+  ここの表にあるのは({open_date.strftime("%Y年%m月%d日")})現在の景気動向指数の一覧です。詳しい景気動向指数の解説はe-statまたはGoogleにてご確認ください。
+  """
+)
+
+last_date = df_merge.date.max()
+df_latest = (
+    df_merge[df_merge.date == last_date][
+        ["分野", "方向及び水準", "$", "@level", "category_level"]
+    ]
+    .sort_values(by=["方向及び水準", "category_level", "分野"])
+    .rename(columns={"$": "DI%"})
+)
+
+st.write(
+    "出典：政府統計の総合窓口(e-Stat)（https://www.e-stat.go.jp/）",
+    df_latest.drop(columns=["@level", "category_level"]),
+)
+
 
 st.markdown(
     """
   ## 景気の現状判断
 
-  DI回答時の景気状況を示す。
+  DI回答時の景気状況の過去から現在までの数値データをグラフ化したものを下記にまとめました。
+
+  なお、景気動向指数は50%を境界として、下向化か上向きかを判断しています。そのため、詳細な分野ごとのグラフについては50%を0としたときのグラフも合わせて記載しました。
+
+  各グラフは凡例をダブルクリック（タップ）することで、表示を限定させることができます。
+
+  グラフ内をダブルクリックすることでオートスケールして全体を表示できます。ドラッグで拡大、各軸のドラッグで拡大縮小が可能です。
 
   """
 )
-
 
 # Lv1
 
@@ -99,9 +129,7 @@ st.markdown(
 
   ### DI結果の現状全体像
 
-  DIは0 ~ 100%の値を示し、50%より小さければ景気は下向き、50%より大きければ景気は上向きとされる。
-
-  全体の結果は、日本国内全体の景気動向を示す。
+  全体の結果は、日本国内全体の景気動向を示します。
   """
 )
 
@@ -110,17 +138,12 @@ df_merge_lv1 = df_merge[df_merge.category_level == 1][
     df_merge["方向及び水準"] == "景気の現状判断（水準）"
 ]
 
-min_household_trends_year_lv1, max_household_trends_year_lv1 = st.select_slider(
-    "グラフの表示期間を選択してください。(単位：年)",
-    options=pd.DatetimeIndex(df_merge_lv1.date).year,
-    value=(
-        pd.DatetimeIndex(df_merge_lv1.date).year.min(),
-        pd.DatetimeIndex(df_merge_lv1.date).year.max(),
-    ),
+min_household_trends = datetime.date(
+    pd.DatetimeIndex(df_merge_lv1.date).year.min(), 1, 1
 )
-
-min_household_trends = datetime.date(min_household_trends_year_lv1, 1, 1)
-max_household_trends = datetime.date(max_household_trends_year_lv1, 12, 31)
+max_household_trends = datetime.date(
+    pd.DatetimeIndex(df_merge_lv1.date).year.max(), 12, 31
+)
 
 
 fig_household_trends_lv1 = px.line(df_merge_lv1, x="date", y="DI", color="分野")
@@ -160,17 +183,13 @@ df_merge_lv2 = df_merge[df_merge.category_level == 2][
     df_merge["方向及び水準"] == "景気の現状判断（水準）"
 ]
 
-min_household_trends_year_lv2, max_household_trends_year_lv2 = st.select_slider(
-    "グラフの表示期間を選択してください。(単位：年)",
-    options=pd.DatetimeIndex(df_merge_lv2.date).year,
-    value=(
-        pd.DatetimeIndex(df_merge_lv2.date).year.min(),
-        pd.DatetimeIndex(df_merge_lv2.date).year.max(),
-    ),
-)
 
-min_household_trends = datetime.date(min_household_trends_year_lv2, 1, 1)
-max_household_trends = datetime.date(max_household_trends_year_lv2, 12, 31)
+min_household_trends = datetime.date(
+    pd.DatetimeIndex(df_merge_lv2.date).year.min(), 1, 1
+)
+max_household_trends = datetime.date(
+    pd.DatetimeIndex(df_merge_lv2.date).year.max(), 12, 31
+)
 
 
 fig_household_trends_lv2 = px.line(df_merge_lv2, x="date", y="DI", color="分野")
@@ -201,9 +220,9 @@ st.markdown(
     """
   ---
 
-  50% 基準での各数値の相対値
+  50% 基準での各数値の相対値となるグラフです。
 
-  負の値であれば景気は下向きとなる。
+  負の値であれば景気は下向きとなります。
   """
 )
 
@@ -259,17 +278,12 @@ df_merge_lv3 = df_merge[df_merge.category_level == 3][
     df_merge["方向及び水準"] == "景気の現状判断（水準）"
 ]
 
-min_household_trends_year_lv3, max_household_trends_year_lv3 = st.select_slider(
-    "グラフの表示期間を選択してください。(単位：年)",
-    options=pd.DatetimeIndex(df_merge_lv3.date).year,
-    value=(
-        pd.DatetimeIndex(df_merge_lv3.date).year.min(),
-        pd.DatetimeIndex(df_merge_lv3.date).year.max(),
-    ),
+min_household_trends = datetime.date(
+    pd.DatetimeIndex(df_merge_lv3.date).year.min(), 1, 1
 )
-
-min_household_trends = datetime.date(min_household_trends_year_lv3, 1, 1)
-max_household_trends = datetime.date(max_household_trends_year_lv3, 12, 31)
+max_household_trends = datetime.date(
+    pd.DatetimeIndex(df_merge_lv3.date).year.max(), 12, 31
+)
 
 
 fig_household_trends = px.line(df_merge_lv3, x="date", y="DI", color="分野")
@@ -299,9 +313,9 @@ st.markdown(
     """
   ---
 
-  50% 基準での各数値の相対値
+  50% 基準での各数値の相対値となるグラフです。
 
-  負の値であれば景気は下向きとなる。
+  負の値であれば景気は下向きとなります。
   """
 )
 
@@ -335,9 +349,7 @@ st.markdown(
 
   ### 将来方向性のDI結果
 
-  DIは0 ~ 100%の値を示し、50%より小さければ景気は下向き、50%より大きければ景気は上向きとされる。
-
-  将来方向性の結果は、日本国内全体の景気動向を示す。
+  将来方向性の結果は、日本国内全体の今後の景気動向の期待を示します。
   """
 )
 
@@ -347,24 +359,11 @@ df_merge_lv1_future = df_merge[df_merge.category_level == 1][
 ]
 
 
-(
-    min_household_trends_year_lv1_future,
-    max_household_trends_year_lv1_future,
-) = st.select_slider(
-    "グラフの表示期間を選択してください。(単位：年)",
-    options=pd.DatetimeIndex(df_merge_lv1_future.date).year,
-    value=(
-        pd.DatetimeIndex(df_merge_lv1_future.date).year.min(),
-        pd.DatetimeIndex(df_merge_lv1_future.date).year.max(),
-    ),
-    key="Lv1_future",
-)
-
 min_household_trends_lv1_future = datetime.date(
-    min_household_trends_year_lv1_future, 1, 1
+    pd.DatetimeIndex(df_merge_lv1_future.date).year.min(), 1, 1
 )
 max_household_trends_lv1_future = datetime.date(
-    max_household_trends_year_lv1_future, 12, 31
+    pd.DatetimeIndex(df_merge_lv1_future.date).year.max(), 12, 31
 )
 
 
@@ -406,24 +405,11 @@ df_merge_lv2_future = df_merge[df_merge.category_level == 2][
     df_merge["方向及び水準"] == "景気の先行き判断（方向性）"
 ]
 
-(
-    min_household_trends_year_lv2_future,
-    max_household_trends_year_lv2_future,
-) = st.select_slider(
-    "グラフの表示期間を選択してください。(単位：年)",
-    options=pd.DatetimeIndex(df_merge_lv2_future.date).year,
-    value=(
-        pd.DatetimeIndex(df_merge_lv2_future.date).year.min(),
-        pd.DatetimeIndex(df_merge_lv2_future.date).year.max(),
-    ),
-    key="Lv2_future",
-)
-
 min_household_trends_lv2_future = datetime.date(
-    min_household_trends_year_lv2_future, 1, 1
+    pd.DatetimeIndex(df_merge_lv2_future.date).year.min(), 1, 1
 )
 max_household_trends_lv2_future = datetime.date(
-    max_household_trends_year_lv2_future, 12, 31
+    pd.DatetimeIndex(df_merge_lv2_future.date).year.max(), 12, 31
 )
 
 
@@ -455,9 +441,9 @@ st.markdown(
     """
   ---
 
-  50% 基準での各数値の相対値
+  50% 基準での各数値の相対値となるグラフです。
 
-  負の値であれば景気は下向きとなる。
+  負の値であれば景気は下向きとなります。
   """
 )
 
@@ -510,24 +496,12 @@ df_merge_lv3_future = df_merge[df_merge.category_level == 3][
     df_merge["方向及び水準"] == "景気の先行き判断（方向性）"
 ]
 
-(
-    min_household_trends_year_lv3_future,
-    max_household_trends_year_lv3_future,
-) = st.select_slider(
-    "グラフの表示期間を選択してください。(単位：年)",
-    options=pd.DatetimeIndex(df_merge_lv3_future.date).year,
-    value=(
-        pd.DatetimeIndex(df_merge_lv3_future.date).year.min(),
-        pd.DatetimeIndex(df_merge_lv3_future.date).year.max(),
-    ),
-    key="Lv3_future",
-)
 
 min_household_trends_lv3_future = datetime.date(
-    min_household_trends_year_lv3_future, 1, 1
+    pd.DatetimeIndex(df_merge_lv3_future.date).year.min(), 1, 1
 )
 max_household_trends_lv3_future = datetime.date(
-    max_household_trends_year_lv3_future, 12, 31
+    pd.DatetimeIndex(df_merge_lv3_future.date).year.max(), 12, 31
 )
 
 
@@ -558,9 +532,9 @@ st.markdown(
     """
   ---
 
-  50% 基準での各数値の相対値
+  50% 基準での各数値の相対値となるグラフです。
 
-  負の値であれば景気は下向きとなる。
+  負の値であれば景気は下向きとなります。
   """
 )
 
