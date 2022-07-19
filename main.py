@@ -77,11 +77,26 @@ df_merge["DI"] = df_merge["$"].astype("float32")
 df_merge["DI_standard"] = df_merge["$"].astype("float32") - 50
 df_merge["category_level"] = df_merge["category_level"].astype("int16")
 df_merge.sort_values("date", inplace=True)
-st.write(df_merge)
+# st.write(df_merge)
 
 open_date = datetime.datetime.strptime(
     dic_data["GET_STATS_DATA"]["STATISTICAL_DATA"]["TABLE_INF"]["OPEN_DATE"], "%Y-%m-%d"
 )
+
+st.markdown(
+  """
+  # 景気動向指数(DI)
+
+  ## ここのデータの取り扱いについて
+
+  ここで使用しているデータはe-statによって提供されているAPIからデータを入手、加工したものです。
+
+  したがって、ここで記載されている1次データはe-statに帰属します。
+
+  """
+
+)
+
 
 st.markdown(
     f"""
@@ -169,6 +184,7 @@ fig_household_trends_lv1.update_layout(
 
 
 st.plotly_chart(fig_household_trends_lv1, use_container_width=True)
+st.write("出典：政府統計の総合窓口(e-Stat)（https://www.e-stat.go.jp/）")
 
 
 st.markdown(
@@ -214,7 +230,7 @@ fig_household_trends_lv2.update_layout(
 )
 
 st.plotly_chart(fig_household_trends_lv2, use_container_width=True)
-
+st.write("出典：政府統計の総合窓口(e-Stat)（https://www.e-stat.go.jp/）")
 
 st.markdown(
     """
@@ -263,7 +279,7 @@ fig_household_trends_lv2_standard.update_layout(
 
 
 st.plotly_chart(fig_household_trends_lv2_standard, use_container_width=True)
-
+st.write("出典：政府統計の総合窓口(e-Stat)（https://www.e-stat.go.jp/）")
 ##
 st.markdown(
     """
@@ -306,7 +322,7 @@ fig_household_trends.update_layout(
 )
 
 st.plotly_chart(fig_household_trends, use_container_width=True)
-
+st.write("出典：政府統計の総合窓口(e-Stat)（https://www.e-stat.go.jp/）")
 ##
 
 st.markdown(
@@ -341,7 +357,7 @@ fig_household_trends.update_layout(
     }
 )
 st.plotly_chart(fig_household_trends, use_container_width=True)
-
+st.write("出典：政府統計の総合窓口(e-Stat)（https://www.e-stat.go.jp/）")
 
 st.markdown(
     """
@@ -391,7 +407,7 @@ fig_household_trends_lv1_future.update_layout(
 )
 
 st.plotly_chart(fig_household_trends_lv1_future, use_container_width=True)
-
+st.write("出典：政府統計の総合窓口(e-Stat)（https://www.e-stat.go.jp/）")
 
 st.markdown(
     """
@@ -435,7 +451,7 @@ fig_household_trends_lv2_future.update_layout(
 )
 
 st.plotly_chart(fig_household_trends_lv2_future, use_container_width=True)
-
+st.write("出典：政府統計の総合窓口(e-Stat)（https://www.e-stat.go.jp/）")
 
 st.markdown(
     """
@@ -481,7 +497,7 @@ fig_household_trends_lv2_standard_future.update_layout(
 )
 
 st.plotly_chart(fig_household_trends_lv2_standard_future, use_container_width=True)
-
+st.write("出典：政府統計の総合窓口(e-Stat)（https://www.e-stat.go.jp/）")
 
 ##
 st.markdown(
@@ -525,7 +541,7 @@ fig_household_trends_lv3_future.update_layout(
 )
 
 st.plotly_chart(fig_household_trends_lv3_future, use_container_width=True)
-
+st.write("出典：政府統計の総合窓口(e-Stat)（https://www.e-stat.go.jp/）")
 ##
 
 st.markdown(
@@ -564,3 +580,4 @@ fig_household_trends_standard_lv3_future.update_layout(
     }
 )
 st.plotly_chart(fig_household_trends_standard_lv3_future, use_container_width=True)
+st.write("出典：政府統計の総合窓口(e-Stat)（https://www.e-stat.go.jp/）")
